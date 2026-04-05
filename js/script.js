@@ -2,6 +2,46 @@ const buttons = document.querySelectorAll('.calculator__btn');
 const displayOperation = document.querySelector('.display__operation');
 const displayResult = document.querySelector('.display__result');
 
+document.addEventListener('keydown', (e) => {
+  keyboardClick(e.key);
+})
+
+const keyboardClick = (key) => {
+  switch (key) {
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+    case '0':
+      digitAction(key);
+      break;
+    case '+':
+    case '-':
+    case '*':
+    case '/':
+    case '=': 
+      operatorAction(key);
+      break;
+    case '.':
+      decimalAction();
+      break;
+    case 'c':
+    case 'C':
+      clearAction();
+      break;
+    case 'Backspace':
+      deleteAction();
+      break;
+    default:
+      return null;
+  }
+}
+
 buttons.forEach(button => button.addEventListener('click', (e) => {
   buttonClick(e.target);
 }));
@@ -35,7 +75,12 @@ const digitAction = (value) => {
   if (operator == null) {
     number1 += value;
   } else {
-    number2 += value;
+    if (result == null) {
+      number2 += value;
+    } else {
+      clearAction();
+      number1 +=  value;
+    }
   }
 
   updateDisplay();
@@ -50,16 +95,18 @@ const operatorAction = (value) => {
 
     operator = value;
   } else {
-    operate();
+    if (number1 != '' && number2 != '') {
+      operate();
+    }
   }
 
   updateDisplay();
 }
 
 const decimalAction = () => {
-  if (operator == null) {
+  if (operator == null && !number1.includes('.')) {
     number1 += '.';
-  } else {
+  } else if (operator != null && !number2.includes('.')) {
     number2 += '.';
   }
 
@@ -127,10 +174,48 @@ const operate = () => {
   }
 }
 
-const add = (num1, num2) => num1 + num2;
+const add = (num1, num2) => {
+  const result = num1 + num2;
 
-const subtract = (num1, num2) => num1 - num2;
+  if (isFloat(result)) {
+    return result.toFixed(6);
+  } else {
+    return result;
+  }
+}
 
-const multiply = (num1, num2) => num1 * num2;
+const subtract = (num1, num2) => {
+  const result = num1 - num2;
 
-const divide = (num1, num2) => num1 / num2;
+  if (isFloat(result)) {
+    return result.toFixed(6);
+  } else {
+    return result;
+  }
+}
+
+const multiply = (num1, num2) => {
+  const result = num1 * num2;
+
+  if (isFloat(result)) {
+    return result.toFixed(6);
+  } else {
+    return result;
+  }
+}
+
+const divide = (num1, num2) => {
+  if (num2 == 0) {
+    return null;
+  }
+
+  const result = num1 / num2;
+
+  if (isFloat) {
+    return result.toFixed(4);
+  } else {
+    return result;
+  }
+}
+
+const isFloat = (number) => !Number.isInteger(number);
